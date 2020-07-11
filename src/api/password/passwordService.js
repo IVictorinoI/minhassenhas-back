@@ -17,11 +17,12 @@ Password.before('post', async (req, res, next) => {
 Password.route('myPasswords', ['get'], function(req, res, next) { 
     const token = req.decoded
     
-    Password.find({ user: token._id }, function(err, docs) {
+    Password.find({ user: token._id }).sort('description').exec(function(err, docs) {
         res.json(docs.map((doc) => {
             return {
                 description: doc.description,
                 login: doc.login,
+                url: doc.url,
                 _id: doc._id
             }
         }))

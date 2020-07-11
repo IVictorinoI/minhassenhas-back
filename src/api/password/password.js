@@ -5,6 +5,7 @@ const mongoose = restful.mongoose
 const passwordSchema = new mongoose.Schema({
     description: { type: String, required: true },
     login: { type: String, required: true },
+    url: { type: String },
     password: { type: String, required: true },
 
     user: {
