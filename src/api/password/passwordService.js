@@ -21,6 +21,7 @@ Password.route('myPasswords', ['get'], function(req, res, next) {
         res.json(docs.map((doc) => {
             return {
                 description: doc.description,
+                login: doc.login,
                 _id: doc._id
             }
         }))
