@@ -4,8 +4,15 @@
   "description": "",
   "main": "src/loader.js",
   "scripts": {
-    "dev": "nodemon",
-    "production": "pm2 start src/loader.js --name minhassenhas-back"
+    "build": "npx typescript",
+    "build:watch": "npx typescript -w",
+    "dev": "npx concurrently \"npm run build\" \"npm run dev:run\"",
+    "dev:watch": "npx concurrently \"npm run build:watch\" \"npm run dev:run\"",
+    "dev:run": "npx nodemon lib/loader.js",
+    "start": "node lib/loader.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "production": "pm2 start src/loader.js --name minhassenhas-back",
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "Victor Matheus Mendes",
