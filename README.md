@@ -109,10 +109,12 @@ src/
     user/             # Modelo de usuário e autenticação
     password/         # Modelo e rotas de credenciais
     common/           # Criptografia e tratamento de erros
-test/                 # Testes de criptografia e integração HTTP/MongoDB
+test/                 # Testes unitários, contratos HTTP e integração HTTP/MongoDB
 ```
 
 ## Testes
+
+A suíte inclui testes unitários e de contratos HTTP sem MongoDB. Consulte [test/README.md](test/README.md) para a estratégia, cobertura e orientações para refatorações. Use `npm run test:unit`, `npm run test:contracts` e `npm run test:coverage` para executar grupos específicos e medir a cobertura.
 
 ```powershell
 npm test

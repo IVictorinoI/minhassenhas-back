@@ -7,7 +7,11 @@
     "start": "node src/loader.js",
     "test": "node --test",
     "dev": "node --watch src/loader.js",
-    "production": "node src/loader.js"
+    "production": "node src/loader.js",
+    "test:unit": "node --test test/auth.test.js test/config.test.js test/crypter.test.js test/models.test.js",
+    "test:contracts": "node --test test/password-contract.test.js",
+    "test:integration": "node --test test/api.test.js",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=src/**/*.js"
   },
   "keywords": [],
   "author": "Victor Matheus Mendes",
