@@ -1,27 +1,13 @@
-const restful = require('node-restful')
+const mongoose = require('mongoose')
 const crypter = require('../common/crypter')
-const mongoose = restful.mongoose
-
-const passwordSchema = new mongoose.Schema({
+const schema = new mongoose.Schema({
     description: { type: String, required: true },
     login: { type: String, required: true },
-    url: { type: String },
+    url: String,
     password: { type: String, required: true },
-
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    }
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 })
-
-
-
-passwordSchema.pre('save', function (next) {    
-    if(this.password && !crypter.isEncrypted(this.password))
-        this.password = crypter.encrypt(this.password)
-
-    next();
+schema.pre('save', function () {
+    if (this.isModified('password')) this.password = crypter.encrypt(this.password)
 })
-
-module.exports = restful.model('Password', passwordSchema)
+module.exports = mongoose.model('Password', schema)

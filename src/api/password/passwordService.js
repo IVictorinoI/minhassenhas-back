@@ -1,47 +1,34 @@
+const router = require('express').Router()
 const Password = require('./password')
-const errorHandler = require('../common/errorHandler.js')
-const crypter = require('../common/crypter.js')
-
-Password.methods(['put', 'post', 'delete'])
-Password.updateOptions({new: true, runValidators: true})
-Password.after('post', errorHandler).after('put', errorHandler)
-
-Password.before('post', async (req, res, next) => {
-    const token = req.decoded
-
-    req.body.user = token._id;
-
-    next()
+const crypter = require('../common/crypter')
+const fields = ['description', 'login', 'url', 'password']
+const input = body => Object.fromEntries(fields.filter(key => body?.[key] !== undefined).map(key => [key, body[key]]))
+const summary = doc => ({ _id: doc._id, description: doc.description, login: doc.login, url: doc.url })
+const notFound = res => res.status(404).json({ errors: ['Senha não encontrada.'] })
+router.get('/myPasswords', async (req, res) => {
+    const docs = await Password.find({ user: req.decoded._id }).sort('description')
+    res.json(docs.map(summary))
 })
-
-Password.route('myPasswords', ['get'], function(req, res, next) { 
-    const token = req.decoded
-    
-    Password.find({ user: token._id }).sort('description').exec(function(err, docs) {
-        res.json(docs.map((doc) => {
-            return {
-                description: doc.description,
-                login: doc.login,
-                url: doc.url,
-                _id: doc._id
-            }
-        }))
-    })    
+router.get('/viewPassword', async (req, res) => {
+    if (!req.query._id) return res.status(400).json({ errors: ['Informe o _id da senha.'] })
+    const doc = await Password.findOne({ user: req.decoded._id, _id: req.query._id })
+    if (!doc) return notFound(res)
+    res.json({ password: crypter.decrypt(doc.password) })
 })
-
-Password.route('viewPassword', ['get'], function(req, res, next) { 
-    const token = req.decoded
-
-    console.log(req.query._id)
-    
-    Password.findOne({ user: token._id, _id: req.query._id }, function(err, doc) {
-        res.json({
-            password: crypter.decrypt(doc.password)
-        })
-    })    
+router.post('/', async (req, res) => {
+    const doc = await Password.create({ ...input(req.body), user: req.decoded._id })
+    res.status(201).json(summary(doc))
 })
-
-
-
-module.exports = Password
-
+router.put('/:id', async (req, res) => {
+    const doc = await Password.findOne({ _id: req.params.id, user: req.decoded._id })
+    if (!doc) return notFound(res)
+    doc.set(input(req.body))
+    await doc.save()
+    res.json(summary(doc))
+})
+router.delete('/:id', async (req, res) => {
+    const doc = await Password.findOneAndDelete({ _id: req.params.id, user: req.decoded._id })
+    if (!doc) return notFound(res)
+    res.json(summary(doc))
+})
+module.exports = router

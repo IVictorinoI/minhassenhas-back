@@ -1,8 +1,7 @@
 module.exports = function (httpServer) {
-    var allowedOrigins = "*:* *:*";
-
     const io = require('socket.io')(httpServer, {
-        origins: allowedOrigins
+        cors: { origin: '*' },
+        allowEIO3: true
     })
 
     var nsp = io.of('api/');
@@ -14,4 +13,5 @@ module.exports = function (httpServer) {
             console.log('socket desconectado '+socket.id);
         });
     });
+    return io
 }

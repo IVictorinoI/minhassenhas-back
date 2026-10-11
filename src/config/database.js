@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
-mongoose.Promise = global.Promise
-module.exports = mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/minhassenhas')
+module.exports = () => mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/minhassenhas', { serverSelectionTimeoutMS: 10000 })
 
 mongoose.Error.messages.general.required = "O atributo '{PATH}' é obrigatório."
 mongoose.Error.messages.Number.min = 

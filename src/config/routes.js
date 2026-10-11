@@ -25,5 +25,5 @@ module.exports = function (server) {
 
     // Rotas de Passwords
     const Password = require('../api/password/passwordService')
-    Password.register(protectedApi, '/passwords')
+    protectedApi.use('/passwords', Password)
 }

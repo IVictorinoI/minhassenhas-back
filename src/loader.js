@@ -1,3 +1,16 @@
+if (require('node:fs').existsSync('.env')) process.loadEnvFile('.env')
 const server = require('./config/server')
-require('./config/database')
-require('./config/routes')(server)
+const mongoose = require('mongoose')
+const { encryptionKey } = require('./api/common/crypter')
+async function start() {
+    encryptionKey()
+    await require('./config/database')()
+    const httpServer = server.listen(process.env.PORT || 3000)
+    httpServer.on('listening', () => console.log('BACKEND is running on port ' + httpServer.address().port))
+    httpServer.on('error', async error => { console.error(error.message); await mongoose.disconnect(); process.exitCode = 1 })
+    const io = require('./config/socketio')(httpServer)
+    const shutdown = () => io.close(() => mongoose.disconnect().then(() => process.exit(0)))
+    process.once('SIGINT', shutdown)
+    process.once('SIGTERM', shutdown)
+}
+start().catch(error => { console.error(error.message); process.exitCode = 1 })
