@@ -1,29 +1,69 @@
 {
   "name": "minhassenhas-back",
   "version": "1.0.0",
-  "description": "API de autenticação e gerenciamento de senhas pessoais",
-  "main": "src/loader.js",
+  "description": "API NestJS/TypeScript de autenticação e gerenciamento de credenciais pessoais",
+  "main": "dist/main.js",
   "scripts": {
-    "start": "node src/loader.js",
-    "test": "node --test",
-    "dev": "node --watch src/loader.js",
-    "production": "node src/loader.js",
-    "test:unit": "node --test test/auth.test.js test/config.test.js test/crypter.test.js test/models.test.js",
-    "test:contracts": "node --test test/password-contract.test.js",
-    "test:integration": "node --test test/api.test.js",
-    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=src/**/*.js"
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/main.js",
+    "predev": "npm run build",
+    "dev": "node --watch --watch-path=src scripts/dev.mjs",
+    "production": "node dist/main.js",
+    "lint": "eslint src",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.cjs\" \"*.json\" \"*.mjs\" \"scripts/*.mjs\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.cjs\" \"*.json\" \"*.mjs\" \"scripts/*.mjs\"",
+    "pretest": "npm run build",
+    "test": "node --test test/*.test.cjs",
+    "test:unit": "npm run build && node --test test/auth.test.cjs test/config.test.cjs test/crypter.test.cjs test/models.test.cjs",
+    "test:contracts": "npm run build && node --test test/password-contract.test.cjs test/nest-contract.test.cjs",
+    "test:integration": "npm run build && node --test test/api.test.cjs test/bootstrap.test.cjs",
+    "test:coverage": "npm run build && node --test --experimental-test-coverage --test-coverage-include=dist/**/*.js test/*.test.cjs",
+    "db:indexes": "npm run build && node dist/database/ensure-indexes.js",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test"
   },
   "keywords": [],
   "author": "Victor Matheus Mendes",
   "license": "ISC",
   "dependencies": {
+    "@nestjs/common": "12.1.2",
+    "@nestjs/config": "12.0.1",
+    "@nestjs/core": "12.1.2",
+    "@nestjs/mongoose": "12.0.0",
+    "@nestjs/platform-express": "12.1.2",
+    "@nestjs/platform-socket.io": "12.1.2",
+    "@nestjs/swagger": "12.0.2",
+    "@nestjs/throttler": "6.7.1",
+    "@nestjs/websockets": "12.1.2",
     "bcrypt": "6.0.0",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.15.1",
     "express": "5.3.0",
     "jsonwebtoken": "9.0.3",
     "mongoose": "9.11.1",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
     "socket.io": "4.8.4"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": "^22.22.0 || >=24.11.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "12.1.2",
+    "@types/bcrypt": "6.0.0",
+    "@types/express": "5.0.6",
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/node": "24.19.2",
+    "eslint": "10.12.0",
+    "prettier": "3.9.10",
+    "socket.io-client": "4.8.4",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1"
+  },
+  "type": "module",
+  "overrides": {
+    "@nestjs/platform-socket.io": {
+      "socket.io": "$socket.io"
+    }
   }
 }

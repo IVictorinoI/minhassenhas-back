@@ -1,1 +1,1 @@
-web: node src/loader.js
+web: node dist/main.js
